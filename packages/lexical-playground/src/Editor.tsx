@@ -6,33 +6,33 @@
  *
  */
 
-import type {JSX} from 'react';
+import type { JSX } from 'react';
 
-import {AutoFocusPlugin} from '@lexical/react/LexicalAutoFocusPlugin';
-import {CharacterLimitPlugin} from '@lexical/react/LexicalCharacterLimitPlugin';
-import {CheckListPlugin} from '@lexical/react/LexicalCheckListPlugin';
-import {ClearEditorPlugin} from '@lexical/react/LexicalClearEditorPlugin';
-import {ClickableLinkPlugin} from '@lexical/react/LexicalClickableLinkPlugin';
-import {CollaborationPlugin} from '@lexical/react/LexicalCollaborationPlugin';
-import {useLexicalComposerContext} from '@lexical/react/LexicalComposerContext';
-import {LexicalErrorBoundary} from '@lexical/react/LexicalErrorBoundary';
-import {HashtagPlugin} from '@lexical/react/LexicalHashtagPlugin';
-import {HistoryPlugin} from '@lexical/react/LexicalHistoryPlugin';
-import {HorizontalRulePlugin} from '@lexical/react/LexicalHorizontalRulePlugin';
-import {ListPlugin} from '@lexical/react/LexicalListPlugin';
-import {PlainTextPlugin} from '@lexical/react/LexicalPlainTextPlugin';
-import {RichTextPlugin} from '@lexical/react/LexicalRichTextPlugin';
-import {SelectionAlwaysOnDisplay} from '@lexical/react/LexicalSelectionAlwaysOnDisplay';
-import {TabIndentationPlugin} from '@lexical/react/LexicalTabIndentationPlugin';
-import {TablePlugin} from '@lexical/react/LexicalTablePlugin';
-import {useLexicalEditable} from '@lexical/react/useLexicalEditable';
-import {CAN_USE_DOM} from '@lexical/utils';
+import { AutoFocusPlugin } from '@lexical/react/LexicalAutoFocusPlugin';
+import { CharacterLimitPlugin } from '@lexical/react/LexicalCharacterLimitPlugin';
+import { CheckListPlugin } from '@lexical/react/LexicalCheckListPlugin';
+import { ClearEditorPlugin } from '@lexical/react/LexicalClearEditorPlugin';
+import { ClickableLinkPlugin } from '@lexical/react/LexicalClickableLinkPlugin';
+import { CollaborationPlugin } from '@lexical/react/LexicalCollaborationPlugin';
+import { useLexicalComposerContext } from '@lexical/react/LexicalComposerContext';
+import { LexicalErrorBoundary } from '@lexical/react/LexicalErrorBoundary';
+import { HashtagPlugin } from '@lexical/react/LexicalHashtagPlugin';
+import { HistoryPlugin } from '@lexical/react/LexicalHistoryPlugin';
+import { HorizontalRulePlugin } from '@lexical/react/LexicalHorizontalRulePlugin';
+import { ListPlugin } from '@lexical/react/LexicalListPlugin';
+import { PlainTextPlugin } from '@lexical/react/LexicalPlainTextPlugin';
+import { RichTextPlugin } from '@lexical/react/LexicalRichTextPlugin';
+import { SelectionAlwaysOnDisplay } from '@lexical/react/LexicalSelectionAlwaysOnDisplay';
+import { TabIndentationPlugin } from '@lexical/react/LexicalTabIndentationPlugin';
+import { TablePlugin } from '@lexical/react/LexicalTablePlugin';
+import { useLexicalEditable } from '@lexical/react/useLexicalEditable';
+import { CAN_USE_DOM } from '@lexical/utils';
 import * as React from 'react';
-import {useEffect, useState} from 'react';
+import { useEffect, useState } from 'react';
 
-import {createWebsocketProvider} from './collaboration';
-import {useSettings} from './context/SettingsContext';
-import {useSharedHistoryContext} from './context/SharedHistoryContext';
+import { createWebsocketProvider } from './collaboration';
+import { useSettings } from './context/SettingsContext';
+import { useSharedHistoryContext } from './context/SharedHistoryContext';
 import ActionsPlugin from './plugins/ActionsPlugin';
 import AutocompletePlugin from './plugins/AutocompletePlugin';
 import AutoEmbedPlugin from './plugins/AutoEmbedPlugin';
@@ -54,10 +54,10 @@ import FloatingTextFormatToolbarPlugin from './plugins/FloatingTextFormatToolbar
 import ImagesPlugin from './plugins/ImagesPlugin';
 import InlineImagePlugin from './plugins/InlineImagePlugin';
 import KeywordsPlugin from './plugins/KeywordsPlugin';
-import {LayoutPlugin} from './plugins/LayoutPlugin/LayoutPlugin';
+import { LayoutPlugin } from './plugins/LayoutPlugin/LayoutPlugin';
 import LinkPlugin from './plugins/LinkPlugin';
 import MarkdownShortcutPlugin from './plugins/MarkdownShortcutPlugin';
-import {MaxLengthPlugin} from './plugins/MaxLengthPlugin';
+import { MaxLengthPlugin } from './plugins/MaxLengthPlugin';
 import MentionsPlugin from './plugins/MentionsPlugin';
 import PageBreakPlugin from './plugins/PageBreakPlugin';
 import PollPlugin from './plugins/PollPlugin';
@@ -75,12 +75,16 @@ import TwitterPlugin from './plugins/TwitterPlugin';
 import YouTubePlugin from './plugins/YouTubePlugin';
 import ContentEditable from './ui/ContentEditable';
 
+//custom plugin
+import DynamicTitlePlugin from './plugins/Qlur/DynamicTitlePlugin';
+import InitialTitlePlugin from './plugins/Qlur/InitialTitlePlugin';
+
 const skipCollaborationInit =
   // @ts-expect-error
   window.parent != null && window.parent.frames.right === window;
 
 export default function Editor(): JSX.Element {
-  const {historyState} = useSharedHistoryContext();
+  const { historyState } = useSharedHistoryContext();
   const {
     settings: {
       isCollab,
@@ -106,8 +110,8 @@ export default function Editor(): JSX.Element {
   const placeholder = isCollab
     ? 'Enter some collaborative rich text...'
     : isRichText
-    ? 'Enter some rich text...'
-    : 'Enter some plain text...';
+      ? 'Enter some rich text...'
+      : 'Enter some plain text...';
   const [floatingAnchorElem, setFloatingAnchorElem] =
     useState<HTMLDivElement | null>(null);
   const [isSmallWidthViewport, setIsSmallWidthViewport] =
@@ -141,24 +145,18 @@ export default function Editor(): JSX.Element {
 
   return (
     <>
-      {isRichText && (
-        <ToolbarPlugin
-          editor={editor}
-          activeEditor={activeEditor}
-          setActiveEditor={setActiveEditor}
-          setIsLinkEditMode={setIsLinkEditMode}
-        />
-      )}
+
       {isRichText && (
         <ShortcutsPlugin
           editor={activeEditor}
           setIsLinkEditMode={setIsLinkEditMode}
+          
+          
         />
       )}
       <div
-        className={`editor-container ${showTreeView ? 'tree-view' : ''} ${
-          !isRichText ? 'plain-text' : ''
-        }`}>
+        className={`editor-container ${showTreeView ? 'tree-view' : ''} ${!isRichText ? 'plain-text' : ''
+          }`}>
         {isMaxLength && <MaxLengthPlugin maxLength={30} />}
         <DragDropPaste />
         <AutoFocusPlugin />
@@ -193,7 +191,7 @@ export default function Editor(): JSX.Element {
                   </div>
                 </div>
               }
-              
+
               ErrorBoundary={LexicalErrorBoundary}
             />
             <MarkdownShortcutPlugin />
@@ -222,6 +220,10 @@ export default function Editor(): JSX.Element {
             <CollapsiblePlugin />
             <PageBreakPlugin />
             <LayoutPlugin />
+
+
+
+
             {floatingAnchorElem && (
               <>
                 <FloatingLinkEditorPlugin
@@ -266,11 +268,45 @@ export default function Editor(): JSX.Element {
         <div>{showTableOfContents && <TableOfContentsPlugin />}</div>
         {shouldUseLexicalContextMenu && <ContextMenuPlugin />}
         {shouldAllowHighlightingWithBrackets && <SpecialTextPlugin />}
-        <ActionsPlugin
-          isRichText={isRichText}
-          shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
-        />
+
       </div>
+
+      <div className="bottom-toolbar-and-actions-container-wrapper">
+
+
+        <div className="bottom-toolbar-and-actions-container">
+
+          {isRichText && (
+            <ToolbarPlugin
+              editor={editor}
+              activeEditor={activeEditor}
+              setActiveEditor={setActiveEditor}
+              setIsLinkEditMode={setIsLinkEditMode}
+            />
+          )}
+
+
+          <ActionsPlugin
+            isRichText={isRichText}
+            shouldPreserveNewLinesInMarkdown={shouldPreserveNewLinesInMarkdown}
+          />
+        </div>
+
+        <div className="dropdown-container">
+
+        </div>
+
+
+      </div>
+
+
+      {/* start qlur plugin */}
+      <DynamicTitlePlugin />
+      <InitialTitlePlugin />
+      {/* end qlur plugin */}
+
+
+
       {/* {showTreeView && <TreeViewPlugin />} */}
     </>
   );

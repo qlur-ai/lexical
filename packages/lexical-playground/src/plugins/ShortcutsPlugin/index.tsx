@@ -66,6 +66,7 @@ export default function ShortcutsPlugin({
 }: {
   editor: LexicalEditor;
   setIsLinkEditMode: Dispatch<boolean>;
+  disableShowShortcutText: Boolean;
 }): null {
   const {toolbarState} = useToolbarState();
 

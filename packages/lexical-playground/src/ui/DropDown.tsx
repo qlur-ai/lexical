@@ -247,7 +247,7 @@ export default function DropDown({
         {buttonLabel && (
           <span className="text dropdown-button-text">{buttonLabel}</span>
         )}
-        <i className="chevron-down" />
+        {/* <i className="chevron-down" /> */}
       </button>
 
       {showDropDown &&
@@ -255,7 +255,7 @@ export default function DropDown({
           <DropDownItems dropDownRef={dropDownRef} onClose={handleClose}>
             {children}
           </DropDownItems>,
-          document.body,
+          document.querySelector('.dropdown-container'),
         )}
     </>
   );

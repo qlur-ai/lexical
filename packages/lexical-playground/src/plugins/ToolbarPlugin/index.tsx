@@ -442,7 +442,7 @@ function ElementFormatDropdown({
         />
         <span className="text">End Align</span>
       </DropDownItem>
-      <Divider />
+        {/* <Divider /> */}
       <DropDownItem
         onClick={() => {
           editor.dispatchCommand(OUTDENT_CONTENT_COMMAND, undefined);
@@ -500,7 +500,7 @@ function TextFormatDropdown({
             rootType={toolbarState.rootType}
             editor={activeEditor}
           />
-          <Divider />
+            {/* <Divider /> */}
         </>
       )}
       <DropDownItem
@@ -511,12 +511,12 @@ function TextFormatDropdown({
         title={`Insert code block (${SHORTCUTS.INSERT_CODE_BLOCK})`}
         aria-label="Insert code block">
         <div className="icon-text-container">
-          <i className="format code" />
+          <i className="icon format code" />
           <span className="text">Code Block</span>
         </div>
         <span className="shortcut">{SHORTCUTS.INSERT_CODE_BLOCK}</span>
       </DropDownItem>
-      <Divider />
+        {/* <Divider /> */}
       <DropDownItem
         onClick={() => {
           activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, 'bold');
@@ -556,20 +556,20 @@ function TextFormatDropdown({
         </div>
         <span className="shortcut">{SHORTCUTS.UNDERLINE}</span>
       </DropDownItem>
-      <Divider />
+        {/* <Divider /> */}
       <FontDropDown
         disabled={!isEditable}
         style={'font-family'}
         value={toolbarState.fontFamily}
         editor={activeEditor}
       />
-      <Divider />
+        {/* <Divider /> */}
       <FontSize
         selectionFontSize={toolbarState.fontSize.slice(0, -2)}
         editor={activeEditor}
         disabled={!isEditable}
       />
-      <Divider />
+        {/* <Divider /> */}
       <DropdownColorPicker
         disabled={!isEditable}
         buttonClassName="toolbar-item color-picker"
@@ -588,7 +588,7 @@ function TextFormatDropdown({
         onChange={onBgColorSelect}
         title="bg color"
       />
-      <Divider />
+        {/* <Divider /> */}
       {toolbarState.blockType === 'code' && (
         <>
           <DropDownComponent
@@ -609,7 +609,7 @@ function TextFormatDropdown({
               );
             })}
           </DropDownComponent>
-          <Divider />
+            {/* <Divider /> */}
         </>
       )}
       <ElementFormatDropdown
@@ -770,7 +770,7 @@ export default function ToolbarPlugin({
       updateToolbarState('isCode', selection.hasFormat('code'));
       updateToolbarState(
         'fontSize',
-        $getSelectionStyleValueForProperty(selection, 'font-size', '15px'),
+        $getSelectionStyleValueForProperty(selection, 'font-size', '16px'),
       );
       updateToolbarState('isLowercase', selection.hasFormat('lowercase'));
       updateToolbarState('isUppercase', selection.hasFormat('uppercase'));

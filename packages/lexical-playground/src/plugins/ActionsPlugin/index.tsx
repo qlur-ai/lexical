@@ -229,7 +229,7 @@ export default function ActionsPlugin({
       </button>
       <DropDownComponent
         buttonClassName="action-button"
-        buttonIconClassName="icon plus"
+        buttonIconClassName="icon dismiss-keyboard"
         buttonAriaLabel="Insert specialized editor node"
         buttonLabel="+">
         {SUPPORT_SPEECH_RECOGNITION && (
