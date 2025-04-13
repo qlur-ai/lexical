@@ -28,7 +28,7 @@
  }
  
  .editor-shell .editor-container {
-   background: #fff;
+   /* background: #fff; */
    position: relative;
    display: block;
    border-bottom-left-radius: 10px;
@@ -728,7 +728,7 @@
  .dropdown {
    z-index: 100;
    display: block;
-   position: fixed;
+   /* position: fixed; */
    box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2), 0 2px 4px 0 rgba(0, 0, 0, 0.1),
      inset 0 0 0 1px rgba(255, 255, 255, 0.5);
    border-radius: 8px;
@@ -1464,7 +1464,7 @@
  .toolbar {
    display: flex;
    margin-bottom: 1px;
-   background: #fff;
+   /* background: #fff; */
    padding: 4px;
    border-top-left-radius: 10px;
    border-top-right-radius: 10px;

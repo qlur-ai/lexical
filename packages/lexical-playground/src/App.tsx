@@ -130,7 +130,7 @@ function getExtraStyles(element: HTMLElement): string {
   const fontSize = parseAllowedFontSize(element.style.fontSize);
   const backgroundColor = parseAllowedColor(element.style.backgroundColor);
   const color = parseAllowedColor(element.style.color);
-  if (fontSize !== '' && fontSize !== '15px') {
+  if (fontSize !== '' && fontSize !== '16px') {
     extraStyles += `font-size: ${fontSize};`;
   }
   if (backgroundColor !== '' && backgroundColor !== 'rgb(255, 255, 255)') {

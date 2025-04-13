@@ -34,6 +34,8 @@ import {
   COLLABORATION_TAG,
   COMMAND_PRIORITY_EDITOR,
   HISTORIC_TAG,
+  UNDO_COMMAND,
+  REDO_COMMAND,
 } from 'lexical';
 import {useCallback, useEffect, useState} from 'react';
 
@@ -47,6 +49,9 @@ import {
   SPEECH_TO_TEXT_COMMAND,
   SUPPORT_SPEECH_RECOGNITION,
 } from '../SpeechToTextPlugin';
+import {useToolbarState} from '../../context/ToolbarContext';
+import {IS_APPLE} from '@lexical/utils';
+import DropDownComponent, {DropDownItem} from '../../ui/DropDown';
 
 async function sendEditorState(editor: LexicalEditor): Promise<void> {
   const stringifiedEditorState = JSON.stringify(editor.getEditorState());
@@ -109,6 +114,8 @@ export default function ActionsPlugin({
   const [modal, showModal] = useModal();
   const showFlashMessage = useFlashMessage();
   const {isCollabActive} = useCollaborationContext();
+  const {toolbarState} = useToolbarState();
+
   useEffect(() => {
     if (INITIAL_SETTINGS.isCollab) {
       return;
@@ -198,107 +205,134 @@ export default function ActionsPlugin({
 
   return (
     <div className="actions">
-      {SUPPORT_SPEECH_RECOGNITION && (
-        <button
-          onClick={() => {
-            editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
-            setIsSpeechToText(!isSpeechToText);
-          }}
-          className={
-            'action-button action-button-mic ' +
-            (isSpeechToText ? 'active' : '')
-          }
-          title="Speech To Text"
-          aria-label={`${
-            isSpeechToText ? 'Enable' : 'Disable'
-          } speech to text`}>
-          <i className="mic" />
-        </button>
-      )}
       <button
-        className="action-button import"
-        onClick={() => importFile(editor)}
-        title="Import"
-        aria-label="Import editor state from JSON">
-        <i className="import" />
-      </button>
-
-      <button
-        className="action-button export"
-        onClick={() =>
-          exportFile(editor, {
-            fileName: `Playground ${new Date().toISOString()}`,
-            source: 'Playground',
-          })
-        }
-        title="Export"
-        aria-label="Export editor state to JSON">
-        <i className="export" />
-      </button>
-      <button
-        className="action-button share"
-        disabled={isCollabActive || INITIAL_SETTINGS.isCollab}
-        onClick={() =>
-          shareDoc(
-            serializedDocumentFromEditorState(editor.getEditorState(), {
-              source: 'Playground',
-            }),
-          ).then(
-            () => showFlashMessage('URL copied to clipboard'),
-            () => showFlashMessage('URL could not be copied to clipboard'),
-          )
-        }
-        title="Share"
-        aria-label="Share Playground link to current editor state">
-        <i className="share" />
-      </button>
-      <button
-        className="action-button clear"
-        disabled={isEditorEmpty}
+        disabled={!toolbarState.canUndo || !isEditable}
         onClick={() => {
-          showModal('Clear editor', (onClose) => (
-            <ShowClearDialog editor={editor} onClose={onClose} />
-          ));
+          editor.dispatchCommand(UNDO_COMMAND, undefined);
         }}
-        title="Clear"
-        aria-label="Clear editor contents">
-        <i className="clear" />
-      </button>
-      <button
-        className={`action-button ${!isEditable ? 'unlock' : 'lock'}`}
-        onClick={() => {
-          // Send latest editor state to commenting validation server
-          if (isEditable) {
-            sendEditorState(editor);
-          }
-          editor.setEditable(!editor.isEditable());
-        }}
-        title="Read-Only Mode"
-        aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
-        <i className={!isEditable ? 'unlock' : 'lock'} />
-      </button>
-      <button
+        title={IS_APPLE ? 'Undo (⌘Z)' : 'Undo (Ctrl+Z)'}
+        type="button"
         className="action-button"
-        onClick={handleMarkdownToggle}
-        title="Convert From Markdown"
-        aria-label="Convert from markdown">
-        <i className="markdown" />
+        aria-label="Undo">
+        <i className="format undo" />
       </button>
-      {isCollabActive && (
-        <button
-          className="action-button connect"
+      <button
+        disabled={!toolbarState.canRedo || !isEditable}
+        onClick={() => {
+          editor.dispatchCommand(REDO_COMMAND, undefined);
+        }}
+        title={IS_APPLE ? 'Redo (⇧⌘Z)' : 'Redo (Ctrl+Y)'}
+        type="button"
+        className="action-button"
+        aria-label="Redo">
+        <i className="format redo" />
+      </button>
+      <DropDownComponent
+        buttonClassName="action-button"
+        buttonIconClassName="icon plus"
+        buttonAriaLabel="Insert specialized editor node"
+        buttonLabel="+">
+        {SUPPORT_SPEECH_RECOGNITION && (
+          <DropDownItem
+            onClick={() => {
+              editor.dispatchCommand(SPEECH_TO_TEXT_COMMAND, !isSpeechToText);
+              setIsSpeechToText(!isSpeechToText);
+            }}
+            className={`item ${isSpeechToText ? 'active' : ''}`}
+            title="Speech To Text"
+            aria-label={`${isSpeechToText ? 'Enable' : 'Disable'} speech to text`}>
+            <i className="mic" />
+            <span className="text">Speech to Text</span>
+          </DropDownItem>
+        )}
+        <DropDownItem
+          className="item"
+          onClick={() => importFile(editor)}
+          title="Import"
+          aria-label="Import editor state from JSON">
+          <i className="import" />
+          <span className="text">Import</span>
+        </DropDownItem>
+        <DropDownItem
+          className="item"
+          onClick={() =>
+            exportFile(editor, {
+              fileName: `Playground ${new Date().toISOString()}`,
+              source: 'Playground',
+            })
+          }
+          title="Export"
+          aria-label="Export editor state to JSON">
+          <i className="export" />
+          <span className="text">Export</span>
+        </DropDownItem>
+        <DropDownItem
+          className="item"
+          disabled={isCollabActive || INITIAL_SETTINGS.isCollab}
+          onClick={() =>
+            shareDoc(
+              serializedDocumentFromEditorState(editor.getEditorState(), {
+                source: 'Playground',
+              }),
+            ).then(
+              () => showFlashMessage('URL copied to clipboard'),
+              () => showFlashMessage('URL could not be copied to clipboard'),
+            )
+          }
+          title="Share"
+          aria-label="Share Playground link to current editor state">
+          <i className="share" />
+          <span className="text">Share</span>
+        </DropDownItem>
+        <DropDownItem
+          className="item"
+          disabled={isEditorEmpty}
           onClick={() => {
-            editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
+            showModal('Clear editor', (onClose) => (
+              <ShowClearDialog editor={editor} onClose={onClose} />
+            ));
           }}
-          title={`${
-            connected ? 'Disconnect' : 'Connect'
-          } Collaborative Editing`}
-          aria-label={`${
-            connected ? 'Disconnect from' : 'Connect to'
-          } a collaborative editing server`}>
-          <i className={connected ? 'disconnect' : 'connect'} />
-        </button>
-      )}
+          title="Clear"
+          aria-label="Clear editor contents">
+          <i className="clear" />
+          <span className="text">Clear</span>
+        </DropDownItem>
+        <DropDownItem
+          className={`item ${!isEditable ? 'unlock' : 'lock'}`}
+          onClick={() => {
+            if (isEditable) {
+              sendEditorState(editor);
+            }
+            editor.setEditable(!editor.isEditable());
+          }}
+          title="Read-Only Mode"
+          aria-label={`${!isEditable ? 'Unlock' : 'Lock'} read-only mode`}>
+          <i className={!isEditable ? 'unlock' : 'lock'} />
+          <span className="text">{!isEditable ? 'Unlock' : 'Lock'}</span>
+        </DropDownItem>
+        <DropDownItem
+          className="item"
+          onClick={handleMarkdownToggle}
+          title="Convert From Markdown"
+          aria-label="Convert from markdown">
+          <i className="markdown" />
+          <span className="text">Markdown</span>
+        </DropDownItem>
+        {isCollabActive && (
+          <DropDownItem
+            className="item"
+            onClick={() => {
+              editor.dispatchCommand(TOGGLE_CONNECT_COMMAND, !connected);
+            }}
+            title={`${connected ? 'Disconnect' : 'Connect'} Collaborative Editing`}
+            aria-label={`${
+              connected ? 'Disconnect from' : 'Connect to'
+            } a collaborative editing server`}>
+            <i className={connected ? 'disconnect' : 'connect'} />
+            <span className="text">{connected ? 'Disconnect' : 'Connect'}</span>
+          </DropDownItem>
+        )}
+      </DropDownComponent>
       {modal}
     </div>
   );
